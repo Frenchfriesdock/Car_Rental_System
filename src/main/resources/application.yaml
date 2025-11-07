@@ -1,6 +1,8 @@
 server:
   port: 8080
 
+
+
 spring:
   application:
     name: car_rental_system
@@ -14,3 +16,8 @@ spring:
       host: 127.0.0.1
       port: 6379
 
+logging:
+  level:
+    org.springframework.beans.factory.support.FactoryBeanRegistrySupport: debug
+    org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory: debug
+    org.mybatis.spring.mapper.MapperScannerConfigurer: debug
