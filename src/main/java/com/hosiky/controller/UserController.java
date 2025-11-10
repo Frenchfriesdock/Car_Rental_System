@@ -2,10 +2,13 @@ package com.hosiky.controller;
 
 
 import com.hosiky.common.Result;
+import com.hosiky.domain.dto.UserRegisterDto;
+import com.hosiky.domain.po.Car;
 import com.hosiky.domain.po.User;
 import com.hosiky.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +29,8 @@ public  class UserController {
 
     @Operation(summary = "用户注册")
     @PostMapping("/register")
-    public Result Register(User user) {
-        return null;
+    public Result Register(UserRegisterDto userRegisterDto) {
+        return Result.ok(userService.register(userRegisterDto));
     }
 
     @Operation(summary = "修改用户")
@@ -46,5 +49,12 @@ public  class UserController {
     @GetMapping("/id")
     public Result showUser(Integer id) {
         return null;
+    }
+
+    @Operation(summary = "短信验证")
+    @PostMapping("/sendEmail")
+    public Result sendCode(@RequestParam @NotBlank String email) {
+        userService.sendCode(email);
+        return Result.ok();
     }
 }

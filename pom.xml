@@ -125,6 +125,13 @@
             <version>${fastjson2.version}</version>
         </dependency>
 
+        <!-- Spring Boot 邮件发送依赖（适配 Jakarta EE） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+
         <!-- 测试依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

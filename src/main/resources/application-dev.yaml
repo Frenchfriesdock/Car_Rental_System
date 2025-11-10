@@ -1,0 +1,12 @@
+car_rental_system:
+  mail:
+    host: smtp.126.com
+    port: 587
+    username: hosiky@126.com
+    password: BFQZiSkWcfz25yWn
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
