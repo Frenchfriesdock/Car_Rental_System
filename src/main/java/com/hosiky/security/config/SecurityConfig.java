@@ -58,6 +58,7 @@ public class SecurityConfig {
 
     /**
      * 登录后的权限校验过滤链
+     * 需要进行jwt校验
      * @param http
      * @return
      * @throws Exception
@@ -76,6 +77,7 @@ public class SecurityConfig {
 
     /**
      * 无须登录的过滤链
+     * 这个是公共的，不需要进行校验的接口，其它没有的默认会走这个接口哦
      * @param http
      * @return
      * @throws Exception

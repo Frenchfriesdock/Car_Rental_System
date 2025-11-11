@@ -5,6 +5,7 @@ import com.hosiky.common.Result;
 import com.hosiky.domain.dto.UserRegisterDto;
 import com.hosiky.domain.po.Car;
 import com.hosiky.domain.po.User;
+import com.hosiky.service.ICarService;
 import com.hosiky.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +13,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @Tag(name = "用户接口")
 @RestController
@@ -36,19 +39,22 @@ public  class UserController {
     @Operation(summary = "修改用户")
     @PutMapping("/userUpdate")
     public Result UpdateUser(User user) {
-        return null;
+
+       return Result.ok(userService.saveOrUpdate(user));
     }
 
     @Operation(summary = "删除用户")
     @DeleteMapping("/id")
     public Result deleteUser(Integer id) {
-        return null;
+        userService.removeById(id);
+        return Result.ok("删除用户成功");
     }
 
     @Operation(summary = "查看用户")
     @GetMapping("/id")
     public Result showUser(Integer id) {
-        return null;
+
+        return Result.ok(userService.getById(id));
     }
 
     @Operation(summary = "短信验证")

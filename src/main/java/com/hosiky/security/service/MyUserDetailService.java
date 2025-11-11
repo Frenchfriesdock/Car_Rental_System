@@ -30,9 +30,13 @@ public class MyUserDetailService implements UserDetailsService {
             Long roleId = Long.valueOf(userRole.getRoleId());
             // roles
             roles.add(Db.lambdaQuery(Role.class).eq(Role::getId, roleId).one().getName());
+
             // permission
+
+
             List<RolePermission> rolePermissionList = Db.lambdaQuery(RolePermission.class)
                     .eq(RolePermission::getRoleId, roleId).list();
+
             Db.lambdaQuery(Permission.class)
                     .in(Permission::getId, rolePermissionList.stream().map(RolePermission::getPermissionId).toList())
                     .list()

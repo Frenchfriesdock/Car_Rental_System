@@ -131,6 +131,11 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.jeffreyning</groupId>
+            <artifactId>mybatisplus-plus</artifactId>
+            <version>1.7.4-RELEASE</version> <!-- 请使用最新版本 -->
+        </dependency>
 
         <!-- 测试依赖 -->
         <dependency>

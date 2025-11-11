@@ -20,6 +20,23 @@ spring:
     password: ${car_rental_system.mail.password}
     host: ${car_rental_system.mail.host}
 
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml  # mapper.xml文件路径
+  type-aliases-package: com.hosiky.domain.po # 实体类所在包
+  type-enums-package: com.hosiky.common.entity.Enum
+  configuration:
+    map-underscore-to-camel-case: true  # 关闭驼峰命名转换（根据实际需求调整）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 控制台打印SQL日志
+  global-config:
+    db-config:
+      id-type: auto  # 主键自增（根据数据库类型调整）
+
+# JWT配置
+jwt:
+  secret-key: "0123456789abcdef0123456789abcdef"
+  ttl: 7200000  # 令牌有效期（7200000毫秒 = 2小时）
+  token-name: token  # 请求头中的令牌键名（如Authorization: token值）
+
 logging:
   level:
     org.springframework.beans.factory.support.FactoryBeanRegistrySupport: debug

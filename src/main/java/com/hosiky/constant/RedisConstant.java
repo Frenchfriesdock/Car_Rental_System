@@ -11,4 +11,5 @@ public final class RedisConstant {
 
     public static final String CODE_ERROR = "验证码核对失败";
 
+    public static final String USER_EXIT = "用户存在";
 }
