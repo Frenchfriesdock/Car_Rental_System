@@ -44,6 +44,6 @@ public class MyUserDetailService implements UserDetailsService {
         }
         // 去重
         List<String> newPermissions = permissions.stream().distinct().toList();
-        return new MyUserDetail(user, roles, newPermissions);
+            return new MyUserDetail(user, roles, newPermissions);
     }
 }

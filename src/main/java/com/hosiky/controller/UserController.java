@@ -37,8 +37,8 @@ public  class UserController {
     }
 
     @Operation(summary = "修改用户")
-    @PutMapping("/userUpdate")
-    public Result UpdateUser(User user) {
+    @PostMapping("/userUpdate")
+    public Result UpdateUser(@RequestBody User user) {
 
        return Result.ok(userService.saveOrUpdate(user));
     }
@@ -63,4 +63,6 @@ public  class UserController {
         userService.sendCode(email);
         return Result.ok();
     }
+
+
 }

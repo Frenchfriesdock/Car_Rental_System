@@ -19,6 +19,13 @@ spring:
     username: ${car_rental_system.mail.username}
     password: ${car_rental_system.mail.password}
     host: ${car_rental_system.mail.host}
+  minio:
+    endpoint: ${cloud-music.minio.endpoint}
+    access-key: ${cloud-music.minio.access-key}
+    secret-key: ${cloud-music.minio.secret-key}
+    bucket-name: ${cloud-music.minio.bucket-name}
+    base-url: ${cloud-music.minio.base-url}
+
 
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml  # mapper.xml文件路径

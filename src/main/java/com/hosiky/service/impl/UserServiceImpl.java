@@ -12,6 +12,7 @@ import com.hosiky.domain.dto.UserRegisterDto;
 import com.hosiky.domain.po.Car;
 import com.hosiky.domain.po.User;
 import com.hosiky.mapper.UserMapper;
+import com.hosiky.properties.JwtProperties;
 import com.hosiky.security.entity.MyUserDetail;
 import com.hosiky.service.IUserService;
 import com.hosiky.utils.JwtUtils;
@@ -43,6 +44,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private final RedisClient redisClient;
     private final MailClient mailClient;
     private final AuthenticationManager authenticationManager;
+    private final JwtProperties jwtProperties;
 
 
     @Override
@@ -79,8 +81,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             String token = jwtUtils.generateJwt(claims);
 
 //            写入redis
-            String key = "User:" + id + token;
-            redisUtil.set(key, JSON.toJSONString(myUserDetail));
+            String key = "User:" + id + ":" + token;
+            long redisExpireSeconds = jwtProperties.getTtl() / 1000;  // 7200s = 2h
+            redisUtil.setex(key, JSON.toJSONString(myUserDetail), redisExpireSeconds);
 
             return Result.ok(token);
         } catch (AuthenticationException e) {

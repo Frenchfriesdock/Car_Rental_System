@@ -10,3 +10,10 @@ car_rental_system:
           auth: true
           starttls:
             enable: true
+
+  minio:
+    endpoint: http://192.168.220.128:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket-name: spring-vehicle
+    base-url: http://192.168.220.128/spring-vehicle
