@@ -1,0 +1,18 @@
+package com.hosiky.service;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.hosiky.common.Result;
+import com.hosiky.domain.po.Brand;
+import com.hosiky.domain.po.CarCategory;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public interface ICarCategoryService extends IService<CarCategory> {
+
+    Page<CarCategory> getBrandsByPage(int page, int rows);
+
+    Result deleteByIds(List<Long> ids);
+}
