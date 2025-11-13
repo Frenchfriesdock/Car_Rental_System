@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "统一登录")
 @RestController
-@RequestMapping("/login/")
+@RequestMapping("/login")
 @RequiredArgsConstructor
 @Slf4j
 public class LoginController {

@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration   // 告诉 Spring 这是一个配置类
-@EnableConfigurationProperties(com.hosiky.properties.MinioProperties.class)
+@EnableConfigurationProperties(MinioProperties.class)
 public class MinioConfig {
 
     @Bean

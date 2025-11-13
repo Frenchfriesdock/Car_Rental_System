@@ -19,13 +19,6 @@ spring:
     username: ${car_rental_system.mail.username}
     password: ${car_rental_system.mail.password}
     host: ${car_rental_system.mail.host}
-  minio:
-    endpoint: ${cloud-music.minio.endpoint}
-    access-key: ${cloud-music.minio.access-key}
-    secret-key: ${cloud-music.minio.secret-key}
-    bucket-name: ${cloud-music.minio.bucket-name}
-    base-url: ${cloud-music.minio.base-url}
-
 
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml  # mapper.xml文件路径
@@ -37,6 +30,14 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto  # 主键自增（根据数据库类型调整）
+
+
+minio:
+  endpoint: ${car_rental_system.minio.endpoint}
+  access-key: ${car_rental_system.minio.access-key}
+  secret-key: ${car_rental_system.minio.secret-key}
+  bucket-name: ${car_rental_system.minio.bucket-name}
+  base-url: ${car_rental_system.minio.base-url}
 
 # JWT配置
 jwt:
