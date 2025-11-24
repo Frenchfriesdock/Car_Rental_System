@@ -15,7 +15,7 @@ public interface ICarService extends IService<Car> {
 
     void addCar(CarDTO carDTO);
 
-    void updateCar(CarDTO carDTO);
+    CarVO updateCar(CarDTO carDTO);
 
     CarVO getCarById(Integer id);
 

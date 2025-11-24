@@ -3,11 +3,13 @@ package com.hosiky.domain.dto.carDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
 @Schema(description = "车辆数据传输对象")
-public class CarDTO {
+public class CarDTO implements Serializable {
     
     @Schema(description = "车辆ID（更新时必填，新增时不需要）")
     private Integer id;

@@ -2,12 +2,14 @@ package com.hosiky.domain.vo.carVo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @Schema(description = "车辆视图对象")
-public class CarVO {
+public class CarVO implements Serializable {
     
     @Schema(description = "车辆ID")
     private Integer id;

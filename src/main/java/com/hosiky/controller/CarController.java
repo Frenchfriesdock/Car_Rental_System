@@ -33,8 +33,7 @@ public class CarController {
     @PutMapping("/update")
     @Operation(summary = "修改汽车信息")
     public Result updateCar(@Validated @RequestBody CarDTO carDTO) {
-        carService.updateCar(carDTO);
-        return Result.ok();
+        return Result.ok(carService.updateCar(carDTO));
     }
 
     @GetMapping("/{id}")
@@ -52,7 +51,6 @@ public class CarController {
     }
 
     /**
-     * TODO 测试还没有通过
      * @param queryDTO
      * @return
      */
