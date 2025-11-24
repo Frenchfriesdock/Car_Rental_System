@@ -70,7 +70,7 @@ public class CarServiceImpl extends ServiceImpl<CarMapper , Car> implements ICar
     public void deleteCarById(Integer id) {
 
      boolean update = lambdaUpdate().eq(Car::getId,id)
-             .set(Car::getDeleted, 0)
+             .set(Car::getDeleted, 1)
              .update();
      if(!update){
       throw new RuntimeException("删除失败");

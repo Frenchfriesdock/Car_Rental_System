@@ -24,6 +24,7 @@ import static java.time.Period.between;
 public class MemberLevelServiceImpl extends ServiceImpl<MemberLevelMapper, MemberLevel>
         implements IMemberLevelService {
 
+
     @Override
     public Page<MemberLevelVO> getMemberLevelPage(Integer page, Integer size, String levelName) {
         Page<MemberLevel> pageInfo = new Page<>(page, size);

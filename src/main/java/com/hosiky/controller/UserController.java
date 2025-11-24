@@ -2,14 +2,16 @@ package com.hosiky.controller;
 
 
 import com.hosiky.common.Result;
-import com.hosiky.domain.dto.UserRegisterDto;
-import com.hosiky.domain.po.User;
+import com.hosiky.domain.dto.userDto.UserRegisterDto;
+import com.hosiky.domain.dto.userDto.UserUpdateDto;
+import com.hosiky.domain.vo.UserVo;
 import com.hosiky.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -26,18 +28,21 @@ public  class UserController {
 
     private final IUserService userService;
 
-
     @Operation(summary = "用户注册")
     @PostMapping("/register")
     public Result Register(UserRegisterDto userRegisterDto) {
         return Result.ok(userService.register(userRegisterDto));
     }
 
+    /**
+     * @param userUpdateDto
+     * @return
+     */
     @Operation(summary = "修改用户")
-    @PutMapping("/userUpdate")
-    public Result UpdateUser(@RequestBody User user) {
-
-       return Result.ok(userService.saveOrUpdate(user));
+    @PostMapping("/userUpdate")
+    public Result UpdateUser(@RequestBody UserUpdateDto userUpdateDto) {
+        UserVo userVo = userService.updateUser(userUpdateDto);
+       return Result.ok(userVo);
     }
 
     @Operation(summary = "删除用户")
@@ -47,11 +52,16 @@ public  class UserController {
         return Result.ok("删除用户成功");
     }
 
+    /**
+     * 这个权限给管理员，管理员可以查看到用户的密码啥的
+     * @param id
+     * @return
+     */
     @Operation(summary = "查看用户")
     @GetMapping("/id")
     public Result showUser(Integer id) {
-
-        return Result.ok(userService.getById(id));
+        UserVo userVo = userService.getUserVo(id);
+        return Result.ok(userVo);
     }
 
     @Operation(summary = "短信验证")

@@ -1,4 +1,4 @@
-package com.hosiky.domain.dto;
+package com.hosiky.domain.dto.userDto;
 
 
 import jakarta.validation.constraints.Email;
@@ -10,6 +10,10 @@ import lombok.Data;
 public class UserRegisterDto {
     @Email
     private String email;
+
+    @NotBlank
+    private String username;
+
     @NotBlank
     @Size(min = 6, max = 32)
     private String password;

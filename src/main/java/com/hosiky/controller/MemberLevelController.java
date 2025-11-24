@@ -24,6 +24,13 @@ public class MemberLevelController {
 
     private IMemberLevelService memberLevelService;
 
+    /**
+     * todo 分页查询的接口有问题
+     * @param page
+     * @param size
+     * @param levelName
+     * @return
+     */
     @Operation(summary = "分页查询会员等级")
     @GetMapping("/page")
     public Result getMemberLevelPage(

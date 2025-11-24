@@ -42,6 +42,15 @@ public class PointsRecordController {
         }
     }
 
+    /**
+     * todo
+     * 分页查询有问题，需要修改
+     * 查不出属于该用户Id的数据
+     * @param userId
+     * @param page
+     * @param size
+     * @return
+     */
     @Operation(summary = "分页查询用户积分流水")
     @GetMapping("/user/{userId}")
     public Result getPointsRecordPage(
@@ -58,6 +67,13 @@ public class PointsRecordController {
         }
     }
 
+    /**
+     * todo
+     * 批量查询不对，有问题
+     * 单个查询还行
+     * @param id
+     * @return
+     */
     @Operation(summary = "根据ID查询积分流水详情")
     @GetMapping("/{id}")
     public Result getPointsRecordById(@PathVariable Long id) {
@@ -73,6 +89,13 @@ public class PointsRecordController {
         }
     }
 
+    /**
+     * todo
+     * 获取单个记录的积分，没有问题
+     * 但是获取多个记录的积分，在合并就有问题
+     * @param userId
+     * @return
+     */
     @Operation(summary = "获取用户总积分")
     @GetMapping("/user/{userId}/total")
     public Result getUserTotalPoints(@PathVariable Long userId) {

@@ -51,6 +51,11 @@ public class CarController {
         return Result.ok();
     }
 
+    /**
+     * TODO 测试还没有通过
+     * @param queryDTO
+     * @return
+     */
     @GetMapping("/list")
     @Operation(summary = "分页查询车辆列表")
     public Result getCarList(@Validated CarQueryDTO queryDTO) {
