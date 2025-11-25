@@ -22,10 +22,10 @@ import java.util.List;
 @Valid
 public class MemberLevelController {
 
-    private IMemberLevelService memberLevelService;
+    private final IMemberLevelService memberLevelService;
 
     /**
-     * todo 分页查询的接口有问题
+     * todo 这个分页查询没问题，但是没有意义
      * @param page
      * @param size
      * @param levelName
@@ -63,7 +63,7 @@ public class MemberLevelController {
         return success ? Result.ok("会员等级创建成功") : Result.errorMsg("会员等级创建失败");
     }
 
-    @Operation(summary = "修改会员等级")
+    @Operation(summary = "修改会员等级信息")
     @PutMapping
     public Result updateMemberLevel(@Valid @RequestBody MemberLevelDTO memberLevelDTO) {
         boolean success = memberLevelService.updateMemberLevel(memberLevelDTO);
