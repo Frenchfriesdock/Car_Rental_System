@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 public class PointsRecord {
 
     @TableId(type = IdType.AUTO)
-    private Long id;
+    private Integer id;
 
     @Schema(description = "用户外键")
-    private Long userId;
+    private Integer userId;
 
     @Schema(description = "变动积分（正增负减）")
     private Integer points;

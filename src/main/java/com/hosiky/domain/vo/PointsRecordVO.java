@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 public class PointsRecordVO {
     
     @Schema(description = "流水ID")
-    private Long id;
+    private Integer id;
     
     @Schema(description = "用户ID")
-    private Long userId;
+    private Integer userId;
     
     @Schema(description = "变动积分")
     private Integer points;

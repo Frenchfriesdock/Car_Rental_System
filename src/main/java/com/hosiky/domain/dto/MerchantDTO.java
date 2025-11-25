@@ -10,11 +10,11 @@ import lombok.Data;
 public class MerchantDTO {
 
     @Schema(description = "车商ID，更新时必需")
-    private Long id;
+    private Integer id;
 
     @NotNull(message = "关联用户ID不能为空")
     @Schema(description = "关联 user.id（车商账号）", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Long userId;
+    private Integer userId;
 
     @NotBlank(message = "公司全称不能为空")
     @Schema(description = "公司全称", requiredMode = Schema.RequiredMode.REQUIRED)

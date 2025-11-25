@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 public class MerchantController {
 
-    private IMerchantService merchantService;
+    private final IMerchantService merchantService;
 
     @PostMapping("/add")
     @Operation(summary = "添加入驻车商")
@@ -30,14 +30,14 @@ public class MerchantController {
     }
 
     /**
-     * TODO 这个修改需要考虑一下修改啥
-     * @param merchant
+     *
+     * @param merchantDto
      * @return
      */
     @PutMapping("/update")
     @Operation(summary = "修改入驻车商信息")
-    public Result updateMerchant(@RequestBody Merchant merchant) {
-        return null;
+    public Result updateMerchant(@RequestBody MerchantDTO merchantDto) {
+        return Result.ok(merchantService.updateMerchantDTO(merchantDto));
     }
 
     @GetMapping("/{merchantId}")
@@ -49,6 +49,7 @@ public class MerchantController {
     }
 
     @DeleteMapping("/{merchantId}")
+    @Operation(summary = "逻辑删除")
     public Result deleteMerchant(@PathVariable int merchantId) {
 
         return Result.ok(merchantService.deleteMerchant(merchantId));

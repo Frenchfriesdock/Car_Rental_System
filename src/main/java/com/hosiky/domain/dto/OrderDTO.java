@@ -12,15 +12,15 @@ import java.time.LocalDateTime;
 public class OrderDTO {
     
     @Schema(description = "订单ID（更新时必传）")
-    private Long id;
+    private Integer id;
     
     @NotNull(message = "用户ID不能为空")
     @Schema(description = "用户ID", required = true)
-    private Long userId;
+    private Integer userId;
     
     @NotNull(message = "车辆ID不能为空")
     @Schema(description = "车辆ID", required = true)
-    private Long carId;
+    private Integer carId;
     
     @NotNull(message = "租用天数不能为空")
     @Schema(description = "租用天数", required = true)

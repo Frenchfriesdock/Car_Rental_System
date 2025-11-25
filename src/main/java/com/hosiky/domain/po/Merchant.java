@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 public class Merchant {
 
     @TableId(type = IdType.AUTO)
-    private Long id;
+    private Integer id;
 
     @Schema(description = "关联 user.id（车商账号）")
-    private Long userId;
+    private Integer userId;
 
     @Schema(description = "公司全称")
     private String company;

@@ -15,4 +15,6 @@ public interface IMerchantService extends IService<Merchant> {
     MerchantVO getMerchantById(int merchantId);
 
     Result deleteMerchant(int merchantId);
+
+    MerchantVO updateMerchantDTO(MerchantDTO merchantDto);
 }

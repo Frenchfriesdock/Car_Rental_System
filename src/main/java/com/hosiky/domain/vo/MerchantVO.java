@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 public class MerchantVO {
 
     @Schema(description = "车商ID")
-    private Long id;
+    private Integer id;
 
     @Schema(description = "关联 user.id（车商账号）")
-    private Long userId;
+    private Integer userId;
 
     @Schema(description = "公司全称")
     private String company;
@@ -22,9 +22,6 @@ public class MerchantVO {
 
     @Schema(description = "状态：1 正常 0 停用")
     private Integer status;
-
-    @Schema(description = "逻辑删除标记")
-    private Integer deleted;
 
     @Schema(description = "创建时间")
     private LocalDateTime createdAt;
