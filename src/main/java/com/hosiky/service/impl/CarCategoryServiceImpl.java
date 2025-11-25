@@ -4,16 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hosiky.common.Result;
+import com.hosiky.domain.dto.CarCategoryDTO;
 import com.hosiky.domain.po.Brand;
 import com.hosiky.domain.po.CarCategory;
+import com.hosiky.domain.vo.CarCategoryVo;
 import com.hosiky.mapper.CarCategoryMapper;
 import com.hosiky.mapper.CarMapper;
 import com.hosiky.service.ICarCategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -53,5 +57,26 @@ public class CarCategoryServiceImpl extends ServiceImpl<CarCategoryMapper,CarCat
             log.error("批量删除品牌失败: ids={}", ids, e);
             throw  new RuntimeException(e);
         }
+    }
+
+    @Override
+    public CarCategoryVo create(CarCategoryDTO carCategoryDto) {
+        CarCategory carCategory = new CarCategory();
+        BeanUtils.copyProperties(carCategoryDto, carCategory);
+        carCategory.setDeleted(0);
+        carCategory.setCreatedAt(LocalDateTime.now());
+        carCategory.setUpdatedAt(LocalDateTime.now());
+        this.save(carCategory);
+        CarCategoryVo carCategoryVo = new CarCategoryVo();
+        BeanUtils.copyProperties(carCategoryDto, carCategoryVo);
+        return carCategoryVo;
+    }
+
+    @Override
+    public CarCategoryVo getByCarCategoryId(Integer id) {
+        CarCategoryVo carCategoryVo = new CarCategoryVo();
+        CarCategory carCategory = this.getById(id);
+        BeanUtils.copyProperties(carCategory, carCategoryVo);
+        return carCategoryVo;
     }
 }

@@ -2,6 +2,7 @@ package com.hosiky.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hosiky.common.Result;
+import com.hosiky.domain.dto.CarCategoryDTO;
 import com.hosiky.domain.po.Brand;
 import com.hosiky.domain.po.CarCategory;
 import com.hosiky.service.ICarCategoryService;
@@ -24,8 +25,8 @@ public class CarCategoryController {
 
     @PostMapping("/save")
     @Operation(summary = "添加分类")
-    public Result add(CarCategory carCategory) {
-        return new Result(carCategoryService.save(carCategory));
+    public Result add(CarCategoryDTO carCategoryDto) {
+        return new Result(carCategoryService.create(carCategoryDto));
     }
 
     @GetMapping("/list")
@@ -54,6 +55,6 @@ public class CarCategoryController {
 
     @GetMapping("/getById")
     public Result getById(@RequestParam Integer id) {
-        return Result.ok(carCategoryService.getById(id));
+        return Result.ok(carCategoryService.getByCarCategoryId(id));
     }
 }
