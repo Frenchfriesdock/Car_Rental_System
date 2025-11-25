@@ -4,15 +4,19 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hosiky.common.Result;
+import com.hosiky.domain.dto.BrandDTO;
 import com.hosiky.domain.po.Brand;
+import com.hosiky.domain.vo.BrandVo;
 import com.hosiky.mapper.BrandMapper;
 import com.hosiky.mapper.CarMapper;
 import com.hosiky.service.IBrandService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,9 +25,9 @@ import java.util.List;
 public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements IBrandService {
 
 
-    private BrandMapper brandMapper;
+    private final BrandMapper brandMapper;
 
-    private CarMapper carMapper;
+    private final CarMapper carMapper;
 
     /**
      * 这个用事务处理
@@ -65,4 +69,51 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
         brandLambdaQueryWrapper.eq(Brand::getDeleted,0);
         return this.page(brandPage, brandLambdaQueryWrapper);
     }
+
+    @Override
+    public BrandVo create(BrandDTO brandDto) {
+        Brand brand = new Brand();
+        BeanUtils.copyProperties(brandDto, brand);
+        brand.setDeleted(0);
+        brand.setCreatedAt(LocalDateTime.now());
+        brand.setUpdatedAt(LocalDateTime.now());
+        brandMapper.insert(brand);
+        BrandVo brandVo = new BrandVo();
+        BeanUtils.copyProperties(brandDto, brandVo);
+        return brandVo;
+    }
+
+    @Override
+    public BrandVo getByBrandId(Integer id) {
+        BrandVo brandVo = new BrandVo();
+        Brand brand = brandMapper.selectById(id);
+        BeanUtils.copyProperties(brand, brandVo);
+        return brandVo;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result deleteByIdsTrue(List<Long> ids) {
+        if(ids == null || ids.isEmpty()) {
+            return Result.errorMsg("删除的ID列表不能为空");
+        }
+        try {
+//             先删除关联数据
+            for(Long id : ids) {
+                carMapper.deleteByIdTrue(id);
+            }
+
+//            在删除品牌数据
+            boolean isSuccess = brandMapper.removeBatchByIdsTrue(ids);
+            if(isSuccess) {
+                return Result.ok("批量删除成功");
+            } else {
+                return Result.errorMsg("批量删除失败");
+            }
+        }catch (Exception e) {
+            log.error("批量删除品牌失败: ids={}", ids, e);
+            throw  new RuntimeException(e);
+        }
+    }
+
 }

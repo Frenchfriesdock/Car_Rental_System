@@ -17,6 +17,7 @@ public class Brand {
     @Schema(description = "品牌名称")
     private String name;
 
+//    由于实体类中存在标记了 @TableLogic的字段，MyBatis-Plus 的拦截器会将 DELETE操作自动转换为 UPDATE 操作
     @TableLogic
     private Integer deleted;
 

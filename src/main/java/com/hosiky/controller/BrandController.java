@@ -3,6 +3,7 @@ package com.hosiky.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hosiky.common.Result;
+import com.hosiky.domain.dto.BrandDTO;
 import com.hosiky.domain.po.Brand;
 import com.hosiky.service.IBrandService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,16 +19,15 @@ import java.util.List;
 @RequestMapping("/brand")
 @RequiredArgsConstructor
 @Slf4j
-
 public class BrandController {
 
-    private IBrandService brandService;
+    private final IBrandService brandService;
 
     @PostMapping("/save")
     @Operation(summary = "添加品牌")
-    public Result add(@RequestBody Brand brand) {
+    public Result add(@RequestBody BrandDTO brandDto) {
 
-        return Result.ok(brandService.save(brand));
+        return Result.ok(brandService.create(brandDto));
     }
 
     @GetMapping("/list")
@@ -49,13 +49,25 @@ public class BrandController {
     }
 
     @DeleteMapping("/batch")
-    @Operation(summary = "删除品牌")
+    @Operation(summary = "逻辑删除品牌")
     public Result delete(@RequestBody List<Long> ids) {
         return brandService.deleteByIds(ids);
     }
 
     @GetMapping("/getById")
+    @Operation(summary = "根据brandId查询品牌信息")
     public Result getById(@RequestParam Integer id) {
-        return Result.ok(brandService.getById(id));
+        return Result.ok(brandService.getByBrandId(id));
+    }
+
+    /**
+     * todo 真正删除还没有实现，可以使用动态sql xml文件来实现
+     * @param ids
+     * @return
+     */
+    @DeleteMapping("/batchTrue")
+    @Operation(summary = "真正删除brand")
+    public Result batchTrue(@RequestBody List<Long> ids) {
+        return Result.ok(brandService.deleteByIdsTrue(ids));
     }
 }

@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class CarCategoryController {
 
-    private ICarCategoryService carCategoryService;
+    private final ICarCategoryService carCategoryService;
 
     @PostMapping("/save")
     @Operation(summary = "添加分类")
