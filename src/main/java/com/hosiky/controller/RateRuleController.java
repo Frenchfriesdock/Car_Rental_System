@@ -2,6 +2,8 @@ package com.hosiky.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hosiky.common.Result;
+import com.hosiky.domain.dto.RateRuleDTO;
+import com.hosiky.domain.dto.SelectRateRuleConditionsDTO;
 import com.hosiky.domain.po.RateRule;
 import com.hosiky.domain.vo.RateRuleVO;
 import com.hosiky.service.IRateRuleService;
@@ -30,38 +32,23 @@ public class RateRuleController {
 
     @Operation(summary = "创建费率规则")
     @PostMapping
-    public Result createRateRule(@Valid @RequestBody RateRule rateRule) {
-        try {
-            boolean success = rateRuleService.createRateRule(rateRule);
+    public Result createRateRule(@Valid @RequestBody RateRuleDTO rateRuleDto) {
+
+            boolean success = rateRuleService.createRateRule(rateRuleDto);
             return success ? Result.ok("费率规则创建成功") : Result.errorMsg("费率规则创建失败");
-        } catch (IllegalArgumentException e) {
-            log.warn("参数验证失败: {}", e.getMessage());
-            return Result.errorMsg(e.getMessage());
-        } catch (RuntimeException e) {
-            log.warn("业务逻辑错误: {}", e.getMessage());
-            return Result.errorMsg(e.getMessage());
-        } catch (Exception e) {
-            log.error("创建费率规则异常", e);
-            return Result.errorMsg("系统异常，请稍后重试");
-        }
     }
 
+    /**
+     * 需要考虑的问题是是否需要id这个东西，因为有唯一键
+     * @param rateRuleDto
+     * @return
+     */
     @Operation(summary = "更新费率规则")
     @PutMapping
-    public Result updateRateRule(@Valid @RequestBody RateRule rateRule) {
-        try {
-            boolean success = rateRuleService.updateRateRule(rateRule);
+    public Result updateRateRule(@Valid @RequestBody RateRuleDTO rateRuleDto) {
+
+            boolean success = rateRuleService.updateRateRule(rateRuleDto);
             return success ? Result.ok("费率规则更新成功") : Result.errorMsg("费率规则更新失败");
-        } catch (IllegalArgumentException e) {
-            log.warn("参数验证失败: {}", e.getMessage());
-            return Result.errorMsg(e.getMessage());
-        } catch (RuntimeException e) {
-            log.warn("业务逻辑错误: {}", e.getMessage());
-            return Result.errorMsg(e.getMessage());
-        } catch (Exception e) {
-            log.error("更新费率规则异常", e);
-            return Result.errorMsg("系统异常，请稍后重试");
-        }
     }
 
     @Operation(summary = "删除费率规则（逻辑删除）")
@@ -109,23 +96,15 @@ public class RateRuleController {
         }
     }
 
+    /**
+     * 条件查询
+     * @param selectRateRuleConditionsDTO
+     * @return
+     */
     @Operation(summary = "根据条件查询费率规则")
     @GetMapping("/by-conditions")
-    public Result getRateRuleByConditions(
-            @RequestParam @NotNull Integer brandId,
-            @RequestParam @NotNull Integer categoryId,
-            @RequestParam @NotNull Integer isWeekend) {
-
-        try {
-            RateRuleVO rateRuleVO = rateRuleService.getRateRuleByConditions(brandId, categoryId, isWeekend);
-            return Result.ok(rateRuleVO);
-        } catch (RuntimeException e) {
-            log.warn("未找到费率规则: brandId={}, categoryId={}, isWeekend={}", brandId, categoryId, isWeekend);
-            return Result.errorMsg(e.getMessage());
-        } catch (Exception e) {
-            log.error("条件查询费率规则异常", e);
-            return Result.errorMsg("查询失败");
-        }
+    public Result getRateRuleByConditions(@RequestBody SelectRateRuleConditionsDTO selectRateRuleConditionsDTO) {
+        return Result.ok(rateRuleService.getRateRuleByConditions(selectRateRuleConditionsDTO));
     }
 
     @Operation(summary = "根据品牌ID查询所有费率规则")
@@ -169,7 +148,7 @@ public class RateRuleController {
             @RequestParam(required = false) Integer excludeId) {
 
         try {
-            boolean isDuplicate = rateRuleService.validateRateRuleDuplicate(brandId, categoryId, isWeekend, excludeId);
+            boolean isDuplicate = rateRuleService.validateRateRuleDuplicate(brandId, categoryId, isWeekend);
             return Result.ok(isDuplicate);
         } catch (Exception e) {
             log.error("验证重复异常", e);

@@ -2,8 +2,11 @@ package com.hosiky.service.impl;
 
 import cn.hutool.core.lang.Assert;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hosiky.domain.dto.RateRuleDTO;
+import com.hosiky.domain.dto.SelectRateRuleConditionsDTO;
 import com.hosiky.domain.po.RateRule;
 import com.hosiky.domain.vo.RateRuleVO;
 import com.hosiky.mapper.RateRuleMapper;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,63 +27,87 @@ import java.util.stream.Collectors;
 @Transactional
 public class RateRuleServiceImpl extends ServiceImpl<RateRuleMapper, RateRule> implements IRateRuleService {
 
-    private RateRuleMapper rateRuleMapper;
+    private final RateRuleMapper rateRuleMapper;
 
     @Override
-    public boolean createRateRule(RateRule rateRule) {
+    public boolean createRateRule(RateRuleDTO rateRuleDto) {
         // 参数验证
-        Assert.notNull(rateRule, "费率规则不能为空");
-        Assert.notNull(rateRule.getBrandId(), "品牌ID不能为空");
-        Assert.notNull(rateRule.getCategoryId(), "分类ID不能为空");
-        Assert.notNull(rateRule.getIsWeekend(), "日期类型不能为空");
-        Assert.notNull(rateRule.getBasePrice(), "基础价格不能为空");
-        Assert.notNull(rateRule.getRatio(), "浮动系数不能为空");
+        Assert.notNull(rateRuleDto, "费率规则不能为空");
+        Assert.notNull(rateRuleDto.getBrandId(), "品牌ID不能为空");
+        Assert.notNull(rateRuleDto.getCategoryId(), "分类ID不能为空");
+        Assert.notNull(rateRuleDto.getIsWeekend(), "日期类型不能为空");
+        Assert.notNull(rateRuleDto.getBasePrice(), "基础价格不能为空");
+        Assert.notNull(rateRuleDto.getRatio(), "浮动系数不能为空");
 
         // 验证浮动系数范围
-        if (rateRule.getRatio().compareTo(BigDecimal.ZERO) <= 0) {
+        if (rateRuleDto.getRatio().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("浮动系数必须大于0");
         }
 
         // 检查规则是否重复
-        if (validateRateRuleDuplicate(rateRule.getBrandId(), rateRule.getCategoryId(),
-                rateRule.getIsWeekend(), null)) {
+        if(validateRateRuleDuplicate(rateRuleDto.getBrandId(), rateRuleDto.getCategoryId(),
+                rateRuleDto.getIsWeekend())) {
             throw new RuntimeException("相同品牌、分类和日期类型的费率规则已存在");
         }
+
+        RateRule rateRule = new RateRule();
+        BeanUtils.copyProperties(rateRuleDto, rateRule);
+        rateRule.setCreatedAt(LocalDateTime.now());
+        rateRule.setUpdatedAt(LocalDateTime.now());
         return this.save(rateRule);
     }
 
+    public boolean validateRateRuleDuplicate(Integer brandId, Integer categoryId, Integer isWeekend) {
+        LambdaQueryWrapper<RateRule> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(RateRule::getBrandId, brandId);
+        wrapper.eq(RateRule::getCategoryId, categoryId);
+        wrapper.eq(RateRule::getIsWeekend, isWeekend);
+        return this.update(wrapper);
+    }
+
     @Override
-    public boolean updateRateRule(RateRule rateRule) {
-        if (rateRule.getId() == null) {
+    public boolean updateRateRule(RateRuleDTO rateRuleDto) {
+        // 1. 参数基本校验
+        if (rateRuleDto.getId() == null) {
             throw new IllegalArgumentException("费率规则ID不能为空");
         }
-
-        // 检查记录是否存在
-        RateRule existing = this.getById(rateRule.getId());
-        if (existing == null || existing.getDeleted() == 1) {
-            throw new RuntimeException("费率规则不存在");
+        if (rateRuleDto.getBasePrice() != null && rateRuleDto.getBasePrice().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("起步价不能为负数");
+        }
+        if (rateRuleDto.getRatio() != null && (rateRuleDto.getRatio().compareTo(BigDecimal.ZERO) <= 0 || rateRuleDto.getRatio().compareTo(new BigDecimal("10")) > 0)) {
+            throw new IllegalArgumentException("浮动系数必须大于0且小于等于10");
         }
 
-        // 验证浮动系数
-        if (rateRule.getRatio() != null && rateRule.getRatio().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("浮动系数必须大于0");
+        // 2. 检查待更新的记录是否存在
+        RateRule existingRule = this.getById(rateRuleDto.getId());
+        if (existingRule == null || existingRule.getDeleted() == 1) {
+            throw new RuntimeException("费率规则不存在，更新失败");
         }
 
-        // 如果修改了关键字段，检查重复
-        if ((rateRule.getBrandId() != null && !rateRule.getBrandId().equals(existing.getBrandId())) ||
-                (rateRule.getCategoryId() != null && !rateRule.getCategoryId().equals(existing.getCategoryId())) ||
-                (rateRule.getIsWeekend() != null && !rateRule.getIsWeekend().equals(existing.getIsWeekend()))) {
+        // 3. 使用 UpdateWrapper 进行更新，避免唯一约束冲突
+        LambdaUpdateWrapper<RateRule> updateWrapper = createUpdateWrapper(rateRuleDto);
+        boolean isSuccess = this.update(updateWrapper);
 
-            if (validateRateRuleDuplicate(
-                    rateRule.getBrandId() != null ? rateRule.getBrandId() : existing.getBrandId(),
-                    rateRule.getCategoryId() != null ? rateRule.getCategoryId() : existing.getCategoryId(),
-                    rateRule.getIsWeekend() != null ? rateRule.getIsWeekend() : existing.getIsWeekend(),
-                    rateRule.getId())) {
-                throw new RuntimeException("相同品牌、分类和日期类型的费率规则已存在");
-            }
+        if (!isSuccess) {
+            // 更新失败可能是由于唯一约束冲突
+            throw new RuntimeException("更新失败，原因：数据冲突或记录不存在");
         }
+        return true;
+    }
 
-        return this.updateById(rateRule);
+    private LambdaUpdateWrapper<RateRule> createUpdateWrapper(RateRuleDTO rateRuleDto) {
+        LambdaUpdateWrapper<RateRule> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(RateRule::getId, rateRuleDto.getId()); // 更新条件：ID匹配
+
+        // 动态设置要更新的字段（即使为null也设置）
+        updateWrapper.set(RateRule::getBasePrice, rateRuleDto.getBasePrice())
+                .eq(rateRuleDto.getBrandId() != null, RateRule::getBrandId, rateRuleDto.getBrandId())
+                .eq(rateRuleDto.getCategoryId() != null, RateRule::getCategoryId, rateRuleDto.getCategoryId())
+                .eq(rateRuleDto.getIsWeekend() != null, RateRule::getIsWeekend, rateRuleDto.getIsWeekend())
+                .set(RateRule::getRatio, rateRuleDto.getRatio())
+                .set(RateRule::getUpdatedAt, LocalDateTime.now());
+
+        return updateWrapper;
     }
 
     @Override
@@ -113,16 +141,22 @@ public class RateRuleServiceImpl extends ServiceImpl<RateRuleMapper, RateRule> i
     }
 
     @Override
-    public RateRuleVO getRateRuleByConditions(Integer brandId, Integer categoryId, Integer isWeekend) {
-        Assert.notNull(brandId, "品牌ID不能为空");
-        Assert.notNull(categoryId, "分类ID不能为空");
-        Assert.notNull(isWeekend, "日期类型不能为空");
+    public List<RateRuleVO> getRateRuleByConditions(SelectRateRuleConditionsDTO selectRateRuleConditionsDTO) {
 
-        RateRule rateRule = rateRuleMapper.selectByConditions(brandId, categoryId, isWeekend);
-        if (rateRule == null) {
-            throw new RuntimeException("未找到对应的费率规则");
-        }
-        return convertToVO(rateRule);
+        LambdaQueryWrapper<RateRule> queryWrapper = new LambdaQueryWrapper<>();
+
+        // 仅为非 null 的参数添加查询条件
+        queryWrapper
+                .eq(selectRateRuleConditionsDTO.getBrandId() != null, RateRule::getBrandId, selectRateRuleConditionsDTO.getBrandId())
+                .eq(selectRateRuleConditionsDTO.getCategoryId() != null, RateRule::getCategoryId, selectRateRuleConditionsDTO.getCategoryId())
+                .eq(selectRateRuleConditionsDTO.getIsWeekend() != null, RateRule::getIsWeekend, selectRateRuleConditionsDTO.getIsWeekend())
+                .orderByDesc(RateRule::getCreatedAt);
+
+        List<RateRule> rateRules = rateRuleMapper.selectList(queryWrapper);
+
+        return rateRules.stream()
+                .map(this::convertToVO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -141,14 +175,6 @@ public class RateRuleServiceImpl extends ServiceImpl<RateRuleMapper, RateRule> i
         return rateRules.stream()
                 .map(this::convertToVO)
                 .collect(Collectors.toList());
-    }
-
-
-    @Override
-    public boolean validateRateRuleDuplicate(Integer brandId, Integer categoryId, Integer isWeekend, Integer excludeId) {
-        Integer count = rateRuleMapper.countDuplicateRules(brandId, categoryId, isWeekend,
-                excludeId != null ? excludeId : -1);
-        return count != null && count > 0;
     }
 
 
