@@ -9,5 +9,5 @@ import org.apache.ibatis.annotations.Select;
 public interface PointsRecordMapper extends BaseMapper<PointsRecord> {
 
     @Select("SELECT COALESCE(SUM(points), 0) FROM points_record WHERE user_id = #{userId} AND deleted = 0")
-    Integer sumPointsByUserId(Long userId);
+    Integer sumPointsByUserId(Integer userId);
 }

@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class PointsRecordServiceImpl extends ServiceImpl<PointsRecordMapper, PointsRecord> implements IPointsRecordService {
 
 
-    private PointsRecordMapper pointsRecordMapper;
+    private final PointsRecordMapper pointsRecordMapper;
 
     @Override
     public boolean createPointsRecord(PointsRecordDTO pointsRecordDTO) {
@@ -55,7 +55,7 @@ public class PointsRecordServiceImpl extends ServiceImpl<PointsRecordMapper, Poi
     }
 
     @Override
-    public Page<PointsRecordVO> getPointsRecordPage(Long userId, Integer page, Integer size) {
+    public Page<PointsRecordVO> getPointsRecordPage(Integer userId, Integer page, Integer size) {
 //        参数校验
         Assert.notNull(userId,"用户ID不能为空");
         if (page == null || page < 1) page = 1;
@@ -75,7 +75,7 @@ public class PointsRecordServiceImpl extends ServiceImpl<PointsRecordMapper, Poi
     }
 
     @Override
-    public PointsRecordVO getPointsRecordById(Long id) {
+    public PointsRecordVO getPointsRecordById(Integer id) {
         PointsRecord pointsRecord = this.getById(id);
         if (pointsRecord == null) {
             throw new RuntimeException("积分记录不存在");
@@ -84,7 +84,7 @@ public class PointsRecordServiceImpl extends ServiceImpl<PointsRecordMapper, Poi
     }
 
     @Override
-    public Integer getUserTotalPoints(Long userId) {
+    public Integer getUserTotalPoints(Integer userId) {
 
         Assert.notNull(userId, "用户ID不能为空");
         Integer totalPoints = pointsRecordMapper.sumPointsByUserId(userId);

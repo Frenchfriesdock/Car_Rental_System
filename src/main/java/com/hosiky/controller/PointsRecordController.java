@@ -43,9 +43,6 @@ public class PointsRecordController {
     }
 
     /**
-     * todo
-     * 分页查询有问题，需要修改
-     * 查不出属于该用户Id的数据
      * @param userId
      * @param page
      * @param size
@@ -54,7 +51,7 @@ public class PointsRecordController {
     @Operation(summary = "分页查询用户积分流水")
     @GetMapping("/user/{userId}")
     public Result getPointsRecordPage(
-            @PathVariable @NotNull Long userId,
+            @PathVariable @NotNull Integer userId,
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
 
@@ -68,15 +65,13 @@ public class PointsRecordController {
     }
 
     /**
-     * todo
-     * 批量查询不对，有问题
-     * 单个查询还行
+     * 这个是主键id，并不是user_id
      * @param id
      * @return
      */
     @Operation(summary = "根据ID查询积分流水详情")
     @GetMapping("/{id}")
-    public Result getPointsRecordById(@PathVariable Long id) {
+    public Result getPointsRecordById(@PathVariable Integer id) {
         try {
             PointsRecordVO pointsRecordVO = pointsRecordService.getPointsRecordById(id);
             return Result.ok(pointsRecordVO);
@@ -90,15 +85,12 @@ public class PointsRecordController {
     }
 
     /**
-     * todo
-     * 获取单个记录的积分，没有问题
-     * 但是获取多个记录的积分，在合并就有问题
      * @param userId
      * @return
      */
     @Operation(summary = "获取用户总积分")
     @GetMapping("/user/{userId}/total")
-    public Result getUserTotalPoints(@PathVariable Long userId) {
+    public Result getUserTotalPoints(@PathVariable Integer userId) {
         try {
             Integer totalPoints = pointsRecordService.getUserTotalPoints(userId);
             return Result.ok(totalPoints);
@@ -108,6 +100,11 @@ public class PointsRecordController {
         }
     }
 
+    /**
+     * 这个接口用的比较少，基本不怎么使用，毕竟有单个创建积分的接口存在
+     * @param pointsRecordDTOList
+     * @return
+     */
     @Operation(summary = "批量创建积分流水")
     @PostMapping("/batch")
     public Result batchCreatePointsRecord(@Valid @RequestBody List<PointsRecordDTO> pointsRecordDTOList) {

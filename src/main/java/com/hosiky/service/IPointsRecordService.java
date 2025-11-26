@@ -16,11 +16,11 @@ public interface IPointsRecordService extends IService <PointsRecord> {
 
     boolean createPointsRecord(@Valid PointsRecordDTO pointsRecordDTO);
 
-    Page<PointsRecordVO> getPointsRecordPage(@NotNull Long userId, Integer page, Integer size);
+    Page<PointsRecordVO> getPointsRecordPage(@NotNull Integer userId, Integer page, Integer size);
 
-    PointsRecordVO getPointsRecordById(Long id);
+    PointsRecordVO getPointsRecordById(Integer id);
 
-    Integer getUserTotalPoints(Long userId);
+    Integer getUserTotalPoints(Integer userId);
 
     boolean batchCreatePointsRecord(@Valid List<PointsRecordDTO> pointsRecordDTOList);
 }
