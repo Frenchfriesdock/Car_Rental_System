@@ -6,18 +6,24 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hosiky.component.CancelOrderSender;
+import com.hosiky.domain.dto.OrderCreateDTO;
 import com.hosiky.domain.dto.OrderDTO;
 import com.hosiky.domain.po.Order;
 import com.hosiky.domain.vo.OrderVO;
 import com.hosiky.mapper.OrderMapper;
 import com.hosiky.service.IOrderService;
+import com.hosiky.utils.WorkdayCalculatorUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
@@ -55,14 +61,29 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public OrderVO createOrder(OrderDTO orderDto) {
+    public OrderVO createOrder(OrderCreateDTO orderCreateDTO) {
 //        参数验证先省略一下
 
         Order order = new Order();
-        BeanUtils.copyProperties(orderDto, order);
+        BeanUtils.copyProperties(orderCreateDTO, order);
         String sn = generateOrderSn();
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
+
+        // 计算租期信息
+        LocalDate startDate = orderCreateDTO.getPickTime().toLocalDate();
+        LocalDate endDate = orderCreateDTO.getReturnTime().toLocalDate();
+
+//        计算总得天数，工作日和非工作日
+        long totalDays = ChronoUnit.DAYS.between(startDate, endDate) + 1; // 总天数包含起止日
+        long workdays = WorkdayCalculatorUtil.calculateWorkdays(startDate, endDate);
+        long nonWorkdays = WorkdayCalculatorUtil.calculateNonWorkdays(startDate, endDate);
+
+        order.setDays((int) totalDays);
+        order.setStatus(0);
+        order.setSn(sn);
+        order.setAmount(BigDecimal.valueOf(100 * totalDays));
+        order.setDeleted(0);
 //        保存订单到数据库里面
         this.save(order);
         log.info("订单创建成功: orderId = {}, orderSn = {}", order.getId(), sn);

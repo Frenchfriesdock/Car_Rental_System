@@ -12,8 +12,8 @@ public class UserUpdateDto implements Serializable {
 
     private Long id;
 
-    @Schema(description = "bcrypt密文")
-    private String password;
+//    @Schema(description = "bcrypt密文")
+//    private String password;
 
     @Schema(description = "手机号")
     private String phone;

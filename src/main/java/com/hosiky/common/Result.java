@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class Result {
+public class Result<T>{
 
     // 响应业务状态码
     private Integer status;

@@ -19,7 +19,7 @@ spring:
     username: ${car_rental_system.mail.username}
     password: ${car_rental_system.mail.password}
     host: ${car_rental_system.mail.host}
-#    rabbitmq的配置
+  # rabbitmq的配置
   rabbitmq:
     host: 192.168.220.128 # 你的虚拟机IP
     port: 5672 # 端口
@@ -29,18 +29,26 @@ spring:
     listener:
       simple:
         prefetch: 1 # 每次只能获取一条消息，处理完成才能获取下一个消息
+  # 修复：jackson配置移到spring下（原错误嵌套在mybatis-plus下）
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
 
+# MyBatis-Plus核心配置（重点修复）
 mybatis-plus:
-  mapper-locations: classpath:mapper/*.xml  # mapper.xml文件路径
+  # 修复1：使用通配符**匹配mapper下所有子目录的XML（兼容任意层级）
+  mapper-locations: classpath:mapper/**/*.xml
   type-aliases-package: com.hosiky.domain.po # 实体类所在包
   type-enums-package: com.hosiky.common.entity.Enum
   configuration:
-    map-underscore-to-camel-case: true  # 关闭驼峰命名转换（根据实际需求调整）
+    # 修复2：明确开启驼峰转换（与数据库字段下划线→实体类驼峰匹配）
+    map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 控制台打印SQL日志
   global-config:
     db-config:
       id-type: auto  # 主键自增（根据数据库类型调整）
-
 
 minio:
   endpoint: ${car_rental_system.minio.endpoint}
@@ -48,8 +56,6 @@ minio:
   secret-key: ${car_rental_system.minio.secret-key}
   bucket-name: ${car_rental_system.minio.bucket-name}
   base-url: ${car_rental_system.minio.base-url}
-
-
 
 # JWT配置
 jwt:
@@ -62,3 +68,6 @@ logging:
     org.springframework.beans.factory.support.FactoryBeanRegistrySupport: debug
     org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory: debug
     org.mybatis.spring.mapper.MapperScannerConfigurer: debug
+    # 新增：打印MyBatis加载日志，便于排查XML问题
+    com.hosiky.mapper: debug
+    org.apache.ibatis: debug

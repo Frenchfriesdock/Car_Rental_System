@@ -3,11 +3,13 @@ package com.hosiky.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hosiky.client.MailClient;
 import com.hosiky.client.RedisClient;
-import com.hosiky.common.Result;
+import com.hosiky.common.*;
 import com.hosiky.constant.RedisConstant;
 import com.hosiky.domain.dto.userDto.UserRegisterDto;
 import com.hosiky.domain.dto.userDto.UserUpdateDto;
@@ -35,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -49,7 +52,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private final AuthenticationManager authenticationManager;
     private final JwtProperties jwtProperties;
     private final UserMapper userMapper;
-
 
     @Override
     public Result loginByUsername(User user) {
@@ -116,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         User newUser = new User();
 
-
+        newUser.setId((UUID.randomUUID().toString().replace("-", "")));
         newUser.setPassword(BCrypt.hashpw(userRegisterDto.getPassword(), BCrypt.gensalt()));
         newUser.setUsername(username);
         newUser.setStatus(1);
@@ -132,7 +134,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public void sendCode(String email) {
+    public String sendCode(String email) {
 //        锁标识的键
         String lock_key = RedisConstant.User_CODE_LOCK + email;
 //        code的键
@@ -149,26 +151,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
            redisClient.set(lock_key,"1",3,TimeUnit.MINUTES);
 //        发送邮件
            mailClient.sendMail(email,code);
-       } finally {
-
+           return code;
+       } catch (Exception e) {
+           throw new RuntimeException(e);
        }
 
     }
 
     @Override
-    public UserVo updateUser(UserUpdateDto userUpdateDto) {
+    public Result updateUser(UserUpdateDto userUpdateDto) {
 
-        String password = BCrypt.hashpw(userUpdateDto.getPassword(), BCrypt.gensalt());
+        User user = this.getById(userUpdateDto.getId());
+        if(Objects.isNull(user)) {
+            return Result.errorMsg("该用户信息不存在");
+        }
+//        String password = BCrypt.hashpw(userUpdateDto.getPassword(), BCrypt.gensalt());
         // 1. 构建更新条件
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(User::getId, userUpdateDto.getId())
-                .set(User::getPassword, password)
-                .set(User::getPhone, userUpdateDto.getPhone())
+                .set(userUpdateDto.getPhone() != null,User::getPhone, userUpdateDto.getPhone())
                 .set(User::getIdCard, userUpdateDto.getIdCard())
                 .set(User::getBirthday, userUpdateDto.getBirthday());
 
         // 2. 执行更新操作
-        boolean isSuccess = update(updateWrapper); // 调用MyBatis-Plus的update方法
+        boolean isSuccess = update(updateWrapper);
 
         if (!isSuccess) {
             throw new RuntimeException("用户更新失败");
@@ -181,16 +187,48 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         UserVo userVo = new UserVo();
         BeanUtils.copyProperties(updatedUser, userVo);
 
-        return userVo;
+        return Result.ok(userVo);
     }
 
     @Override
     public UserVo getUserVo(Integer id) {
         User user = this.getById(id);
+//        User user = this.userMapper.getUserTest(id);
         UserVo userVo = new UserVo();
         BeanUtils.copyProperties(user, userVo);
         return userVo;
     }
+
+    @Override
+    public ResultUtil<Page<User>> listUser(PageParameter<User> userQuery) {
+        try {
+
+            Page<User> page = new Page<>(userQuery.getPage(), userQuery.getLimit());
+
+            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+            if(userQuery.getData().getUsername() != null && !userQuery.getData().getUsername().equals("")) {
+                queryWrapper.like(User::getUsername, userQuery.getData().getUsername());
+            }
+            if(userQuery.getData().getEmail() != null && !userQuery.getData().getEmail().equals("")) {
+                queryWrapper.eq(User::getEmail, userQuery.getData().getEmail());
+            }
+
+            Page<User> userPage = this.userMapper.selectPage(page, queryWrapper);
+//            ByPageResult<User> userList = baseMapper.getUserList(userQuery);
+            return ResultUtil.build(200, userPage,"查询用户成功");
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            return ResultUtil.error("查询失败");
+        }
+    }
+
+//    @Override
+//    public Result deleteUserTruly() {
+//        this.userMapper.deleteUserTruly();
+//        return Result.ok("物理删除成功");
+//    }
+
 
     private String generateCode() {
         return RandomUtil.randomNumbers(6);

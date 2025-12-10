@@ -15,7 +15,7 @@ public class User {
 
     @TableId(value = "id", type = IdType.AUTO)
     @Schema(description = "用户主键")
-    private Long id;
+    private String id;
 
     @Schema(description = "登录账号")
     private String username;

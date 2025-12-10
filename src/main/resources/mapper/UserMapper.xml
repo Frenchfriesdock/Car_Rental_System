@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 必须与Mapper接口全类名完全一致 -->
+<mapper namespace="com.hosiky.mapper.UserMapper">
+
+    <!-- getUserTest：id与接口方法名完全一致 -->
+    <select id="getUserTest" resultType="com.hosiky.domain.po.User">
+        select id,username,phone,email,id_card,birthday,balance,points,grow_value,status,created_at,updated_at
+        from user
+        where 'delete' = 0 and id = #{id}
+    </select>
+
+    <!-- getUserList：修复parameterType为PageParameter -->
+    <select id="getUserList" parameterType="com.hosiky.common.PageParameter" resultType="com.hosiky.domain.po.User">
+        SELECT id,username,phone,email,id_card,birthday,balance,points,grow_value,status,created_at,updated_at
+        FROM user
+        WHERE `delete` = 0
+        <if test="data.username != null and data.username != ''">
+            AND username LIKE CONCAT('%',#{data.username},'%')
+        </if>
+        <if test="data.email != null and data.email != ''">
+            AND email LIKE CONCAT('%',#{data.email},'%')
+        </if>
+        <if test="data.status != null">
+            AND status = #{data.status}
+        </if>
+        ORDER BY created_at DESC
+    </select>
+
+</mapper>

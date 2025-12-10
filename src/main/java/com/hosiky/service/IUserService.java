@@ -1,15 +1,15 @@
 package com.hosiky.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.hosiky.common.Result;
+import com.hosiky.common.*;
 import com.hosiky.domain.dto.userDto.UserRegisterDto;
 import com.hosiky.domain.dto.userDto.UserUpdateDto;
 import com.hosiky.domain.po.User;
 import com.hosiky.domain.vo.UserVo;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.stereotype.Service;
 
-@Service
+
 public interface IUserService extends IService<User> {
 
     /**
@@ -21,9 +21,14 @@ public interface IUserService extends IService<User> {
 
     User register(UserRegisterDto userRegisterDto);
 
-    void sendCode(@NotBlank String email);
+    String sendCode(@NotBlank String email);
 
-    UserVo updateUser(UserUpdateDto userUpdateDto);
+    Result updateUser(UserUpdateDto userUpdateDto);
 
     UserVo getUserVo(Integer id);
+
+    ResultUtil<Page<User>> listUser(PageParameter<User> userQuery);
+
+//    Result deleteUserTruly();
+
 }

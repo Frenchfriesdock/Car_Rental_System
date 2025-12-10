@@ -10,7 +10,6 @@ import com.hosiky.common.PageResult;
 import com.hosiky.domain.dto.carDto.CarDTO;
 import com.hosiky.domain.dto.carDto.CarQueryDTO;
 import com.hosiky.domain.po.Car;
-import com.hosiky.domain.po.CarCategory;
 import com.hosiky.domain.vo.carVo.CarVO;
 import com.hosiky.mapper.BrandMapper;
 import com.hosiky.mapper.CarCategoryMapper;
@@ -25,9 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor

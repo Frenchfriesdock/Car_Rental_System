@@ -2,8 +2,7 @@ package com.hosiky.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hosiky.common.Result;
-import com.hosiky.domain.dto.OrderDTO;
-import com.hosiky.domain.po.Order;
+import com.hosiky.domain.dto.OrderCreateDTO;
 import com.hosiky.domain.vo.OrderVO;
 import com.hosiky.service.IOrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,9 +26,9 @@ public class OrderController {
 
     @Operation(summary = "创建租车订单")
     @PostMapping
-    public Result createOrder(@Valid @RequestBody OrderDTO orderDto) {
+    public Result createOrder(@Valid @RequestBody OrderCreateDTO orderCreateDTO) {
         try {
-            OrderVO orderVO = orderService.createOrder(orderDto);
+            OrderVO orderVO = orderService.createOrder(orderCreateDTO);
             return Result.ok(orderVO);
         } catch (IllegalArgumentException e) {
             return Result.errorMsg("参数错误: " + e.getMessage());

@@ -7,6 +7,8 @@ import com.hosiky.domain.po.AccountRecord;
 import com.hosiky.domain.vo.AccountStatisticsVO;
 import com.hosiky.mapper.AccountRecordMapper;
 import com.hosiky.service.IAccountRecordService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -15,9 +17,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class AccountRecordServiceImpl extends ServiceImpl<AccountRecordMapper, AccountRecord> implements IAccountRecordService {
 
-    private AccountRecordMapper accountRecordMapper;
+    private final AccountRecordMapper accountRecordMapper;
 
     @Override
     public Page<AccountRecord> getRecordPage(Integer page, Integer size, Long userId, Integer type, String orderSn, LocalDateTime startTime, LocalDateTime endTime) {
