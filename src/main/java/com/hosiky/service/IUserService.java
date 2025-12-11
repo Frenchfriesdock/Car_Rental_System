@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.hosiky.common.*;
 import com.hosiky.domain.dto.userDto.UserRegisterDto;
 import com.hosiky.domain.dto.userDto.UserUpdateDto;
+import com.hosiky.domain.dto.userDto.UserUpdatePasswordDto;
 import com.hosiky.domain.po.User;
 import com.hosiky.domain.vo.UserVo;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 
@@ -28,6 +31,10 @@ public interface IUserService extends IService<User> {
     UserVo getUserVo(Integer id);
 
     ResultUtil<Page<User>> listUser(PageParameter<User> userQuery);
+
+    Boolean updatePassword(UserUpdatePasswordDto userUpdatePasswordDto);
+
+    Result loginOut(@Valid String accessToken, HttpServletResponse response);
 
 //    Result deleteUserTruly();
 

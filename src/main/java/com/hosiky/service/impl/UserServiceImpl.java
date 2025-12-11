@@ -13,6 +13,7 @@ import com.hosiky.common.*;
 import com.hosiky.constant.RedisConstant;
 import com.hosiky.domain.dto.userDto.UserRegisterDto;
 import com.hosiky.domain.dto.userDto.UserUpdateDto;
+import com.hosiky.domain.dto.userDto.UserUpdatePasswordDto;
 import com.hosiky.domain.po.User;
 import com.hosiky.domain.vo.UserVo;
 import com.hosiky.mapper.UserMapper;
@@ -21,6 +22,9 @@ import com.hosiky.security.entity.MyUserDetail;
 import com.hosiky.service.IUserService;
 import com.hosiky.utils.JwtUtils;
 import com.hosiky.utils.RedisUtil;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -70,6 +74,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
             MyUserDetail myUserDetail = (MyUserDetail) authenticate.getPrincipal();
             if(Objects.isNull(myUserDetail)) {
+
                 throw new AuthenticationServiceException("认证失败，用户名或者密码错误");
             }
 
@@ -221,6 +226,57 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             e.printStackTrace();
             return ResultUtil.error("查询失败");
         }
+    }
+
+    @Override
+    public Boolean updatePassword(UserUpdatePasswordDto userUpdatePasswordDto) {
+        User user = this.getById(userUpdatePasswordDto.getId());
+        if(!BCrypt.checkpw(userUpdatePasswordDto.getPassword(), user.getPassword())) {
+            throw new RuntimeException("原密码错误");
+        }
+
+        if(!Objects.equals(userUpdatePasswordDto.getNewPassword(), userUpdatePasswordDto.getConfirmPassword())) {
+            throw new RuntimeException("两次密码不正确");
+        }
+        String newHash = BCrypt.hashpw(userUpdatePasswordDto.getNewPassword(), BCrypt.gensalt());
+        user.setPassword(newHash);
+        return this.updateById(user);
+    }
+
+    @Override
+    public Result loginOut(String accessToken, HttpServletResponse response) {
+        // 1. 去掉 "Bearer " 前缀
+        if (accessToken != null && accessToken.startsWith("Bearer ")) {
+            accessToken = accessToken.substring(7);
+        }
+
+        // 2. 解析 jwt 拿用户 id
+        String userId;
+        try {
+            Claims claims = jwtUtils.parseJWT(accessToken);
+            userId = claims.getId();
+//            userId = jwtUtils.parseJWT(accessToken).get("id", String.class);
+        } catch (Exception e) {
+            // token 非法也返回成功，反正目的是“让它失效”
+            return Result.ok("已退出");
+        }
+
+        // 3. 删 Redis 里以 "User:{id}:{token}" 为模式的所有 key
+        Set<String> keys = redisUtil.scan("User:" + userId + ":*");
+        if (!keys.isEmpty()) {
+            redisUtil.delete(keys);
+        }
+
+        // 4. 清 SpringSecurity 上下文（防止并发线程里还残留）
+        SecurityContextHolder.clearContext();
+
+        // 5. 让前端也删 cookie（可选）
+        Cookie cookie = new Cookie("Authorization", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return Result.ok("退出成功");
     }
 
 //    @Override

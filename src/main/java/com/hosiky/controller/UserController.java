@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hosiky.common.*;
 import com.hosiky.domain.dto.userDto.UserRegisterDto;
 import com.hosiky.domain.dto.userDto.UserUpdateDto;
+import com.hosiky.domain.dto.userDto.UserUpdatePasswordDto;
 import com.hosiky.domain.po.User;
 import com.hosiky.domain.vo.UserVo;
 import com.hosiky.service.IUserService;
@@ -31,7 +32,7 @@ public  class UserController {
 
     @Operation(summary = "用户注册")
     @PostMapping("/register")
-    public Result Register(UserRegisterDto userRegisterDto) {
+    public Result Register(@RequestBody UserRegisterDto userRegisterDto) {
         return Result.ok(userService.register(userRegisterDto));
     }
 
@@ -81,6 +82,11 @@ public  class UserController {
         return Result.ok(code);
     }
 
+    @Operation(summary = "修改用户密码")
+    @PostMapping("/updatePassword")
+    public Result UpdatePassword(@RequestBody UserUpdatePasswordDto userUpdatePasswordDto) {
+        return  Result.ok(userService.updatePassword(userUpdatePasswordDto));
+    }
 //    @Operation(summary = "删除所有逻辑删除的数据")
 //    @DeleteMapping("/deleteTruly")
 //    public Result deleteUserTruly(){
