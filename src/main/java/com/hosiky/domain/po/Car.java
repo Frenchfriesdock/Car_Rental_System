@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class Car {
 
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private String id;
 
     @Schema(description = "车牌号")
     private String plateNo;
@@ -22,13 +22,13 @@ public class Car {
     private String model;
 
     @Schema(description = "品牌外键")
-    private Integer brandId;
+    private String brandId;
 
     @Schema(description = "分类外键")
-    private Integer categoryId;
+    private String categoryId;
 
     @Schema(description = "车商外键（NULL=平台自营）")
-    private Long merchantId;
+    private String merchantId;
 
     @Schema(description = "兜底日价（无费率规则时用）")
     private BigDecimal priceDaily;

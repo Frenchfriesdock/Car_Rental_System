@@ -9,5 +9,5 @@ import org.apache.ibatis.annotations.Select;
 public interface CarCategoryMapper extends BaseMapper<CarCategory> {
 
     @Select("select * from car_category where id = #{categoryId}")
-    CarCategory getByCarCategoryId(Integer categoryId);
+    CarCategory getByCarCategoryId(String categoryId);
 }

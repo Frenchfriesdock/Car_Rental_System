@@ -12,11 +12,12 @@ import java.time.LocalDateTime;
 public class Brand {
 
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private String id;
 
     @Schema(description = "品牌名称")
     private String name;
 
+    private String remark;
 //    由于实体类中存在标记了 @TableLogic的字段，MyBatis-Plus 的拦截器会将 DELETE操作自动转换为 UPDATE 操作
     @TableLogic
     private Integer deleted;

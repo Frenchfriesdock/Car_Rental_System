@@ -10,9 +10,11 @@ public class CarCategoryDTO {
 
 
     @Schema(description = "分类ID，更新时必需")
-    private Integer id; // 更新操作时需要
+    private String id; // 更新操作时需要
 
     @NotBlank(message = "分类名称不能为空")
     @Schema(description = "分类名称", requiredMode = Schema.RequiredMode.REQUIRED)
     private String name;
+
+    private String remark;
 }

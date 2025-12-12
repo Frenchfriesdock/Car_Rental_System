@@ -1,6 +1,7 @@
 package com.hosiky.service.impl;
 
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,6 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.UUID;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -42,6 +46,7 @@ public class CarServiceImpl extends ServiceImpl<CarMapper , Car> implements ICar
     public void addCar(CarDTO carDTO) {
      Car car = new Car();
      BeanUtils.copyProperties(carDTO, car);
+     car.setId((UUID.randomUUID().toString().replace("-", "")));
      car.setCreatedAt(LocalDateTime.now());
      car.setUpdatedAt(LocalDateTime.now());
      this.save(car);
@@ -61,6 +66,16 @@ public class CarServiceImpl extends ServiceImpl<CarMapper , Car> implements ICar
       throw new RuntimeException("更新Car对象不存在");
      }
 
+     String brandId = carDTO.getBrandId();
+     String categoryId = carDTO.getCategoryId();
+     // 品牌
+     if (StrUtil.isNotBlank(brandId) && brandMapper.getByBrandId(brandId) == null) {
+      throw new RuntimeException("品牌不存在");
+     }
+// 分类
+     if (StrUtil.isNotBlank(categoryId) && carCategoryMapper.getByCarCategoryId(categoryId) == null) {
+      throw new RuntimeException("汽车类型不存在");
+     }
      LambdaUpdateWrapper<Car> updateWrapper = new LambdaUpdateWrapper<>();
      updateWrapper.eq(Car::getId , carDTO.getId())
              .set(carDTO.getPlateNo() != null, Car::getPlateNo, carDTO.getPlateNo())
@@ -82,21 +97,29 @@ public class CarServiceImpl extends ServiceImpl<CarMapper , Car> implements ICar
 
     @Override
     @Transactional(readOnly = true)
-    public CarVO getCarById(Integer id) {
+    public CarVO getCarById(String id) {
 //   getById这个方法在执行的过程当中，会自己考虑到逻辑查询这个点，也就是delete == 0
          Car car = this.getById(id);
          CarVO carVO = new CarVO();
          BeanUtils.copyProperties(car, carVO);
 //         给vo的属性赋值
-         carVO.setBrandName(brandMapper.getByBrandId(carVO.getBrandId()).getName());
-         carVO.setMerchantName(merchantMapper.getByMerchantId(carVO.getMerchantId()).getCompany());
+        if(car.getCategoryId() != null){
          carVO.setCategoryName(carCategoryMapper.getByCarCategoryId(carVO.getCategoryId()).getName());
+        }
+        if(car.getBrandId() != null){
+         carVO.setBrandName(brandMapper.getByBrandId(carVO.getBrandId()).getName());
+        }
+        if (car.getMerchantId() != null){
+         carVO.setMerchantName(merchantMapper.getByMerchantId(carVO.getMerchantId()).getCompany());
+        }
         return carVO;
 
     }
 
+
+
     @Override
-    public void deleteCarById(Integer id) {
+    public void deleteCarById(String id) {
 
      boolean update = lambdaUpdate().eq(Car::getId,id)
              .set(Car::getDeleted, 1)
@@ -115,16 +138,16 @@ public class CarServiceImpl extends ServiceImpl<CarMapper , Car> implements ICar
      if (StringUtils.hasText(queryDTO.getPlateNo())) {
       queryWrapper.like(Car::getPlateNo, queryDTO.getPlateNo());
      }
-     if(queryDTO.getBrandId() != null){
+     if(StringUtils.hasText(queryDTO.getBrandId())){
       queryWrapper.eq(Car::getBrandId, queryDTO.getBrandId());
      }
-     if (queryDTO.getCategoryId() != null) {
+     if (StringUtils.hasText(queryDTO.getCategoryId())) {
       queryWrapper.eq(Car::getCategoryId, queryDTO.getCategoryId());
      }
-     if (queryDTO.getMerchantId() != null) {
+     if (StringUtils.hasText(queryDTO.getMerchantId())) {
       queryWrapper.eq(Car::getMerchantId, queryDTO.getMerchantId());
      }
-     if (queryDTO.getStatus() != null) {
+     if (StringUtils.hasText(queryDTO.getStatus())) {
       queryWrapper.eq(Car::getStatus, queryDTO.getStatus());
      }
      // 价格范围查询

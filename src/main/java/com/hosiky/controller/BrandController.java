@@ -2,6 +2,7 @@ package com.hosiky.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hosiky.common.PageParameter;
 import com.hosiky.common.Result;
 import com.hosiky.domain.dto.BrandDTO;
 import com.hosiky.domain.po.Brand;
@@ -38,19 +39,15 @@ public class BrandController {
 
     @GetMapping("/listPage")
     @Operation(summary = "分页查询品牌")
-    public Result listPage(@RequestParam int page, @RequestParam int rows) {
+    public Result listPage(@RequestBody PageParameter<BrandDTO> pageParameter) {
 
-        // 参数校验
-        if (page < 1) page = 1;
-        if (rows < 1 || rows > 100) rows = 10; // 限制每页大小，防止恶意请求
-
-        Page<Brand> brandPage = brandService.getBrandsByPage(page, rows);
+        Page<Brand> brandPage = brandService.getBrandsByPage(pageParameter);
         return Result.ok(brandPage);
     }
 
-    @DeleteMapping("/batch")
+    @DeleteMapping("/brand")
     @Operation(summary = "逻辑删除品牌")
-    public Result delete(@RequestBody List<Long> ids) {
+    public Result delete(@RequestBody List<String> ids) {
         return brandService.deleteByIds(ids);
     }
 
@@ -67,7 +64,7 @@ public class BrandController {
      */
     @DeleteMapping("/batchTrue")
     @Operation(summary = "真正删除brand")
-    public Result batchTrue(@RequestBody List<Long> ids) {
+    public Result batchTrue(@RequestBody List<String> ids) {
         return Result.ok(brandService.deleteByIdsTrue(ids));
     }
 }

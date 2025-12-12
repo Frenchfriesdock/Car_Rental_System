@@ -38,16 +38,16 @@ public class CarController {
 
     @GetMapping("/{id}")
     @Operation(summary = "根据ID查看汽车详情")
-    public Result getCarById(@PathVariable Integer id) {
+    public Result getCarById(@PathVariable String id) {
         CarVO carVO = carService.getCarById(id);
         return Result.ok(carVO);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "根据ID删除汽车")
-    public Result deleteCarById(@PathVariable Integer id) {
+    public Result deleteCarById(@PathVariable String id) {
         carService.deleteCarById(id);
-        return Result.ok();
+        return Result.ok("删除成功");
     }
 
     /**
@@ -56,8 +56,14 @@ public class CarController {
      */
     @GetMapping("/list")
     @Operation(summary = "分页查询车辆列表")
-    public Result getCarList(@Validated CarQueryDTO queryDTO) {
+    public Result getCarList(@RequestBody CarQueryDTO queryDTO) {
         PageResult<CarVO> pageResult = carService.getCarList(queryDTO);
         return Result.ok(pageResult);
     }
+
+//    @Operation(summary = "汽车绑定品牌")
+//    @PostMapping("/bindBrand")
+//    public Result CarBindBrand(String brandId) {
+//
+//    }
 }

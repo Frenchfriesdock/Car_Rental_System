@@ -7,6 +7,7 @@ import java.io.Serializable;
 @Data
 public class CarCategoryVo implements Serializable {
 
-    private Integer id;
+    private String id;
     private String name;
+    private String remark;
 }

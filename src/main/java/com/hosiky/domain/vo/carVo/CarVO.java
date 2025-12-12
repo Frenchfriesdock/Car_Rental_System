@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class CarVO implements Serializable {
     
     @Schema(description = "车辆ID")
-    private Integer id;
+    private String id;
     
     @Schema(description = "车牌号")
     private String plateNo;
@@ -21,19 +21,19 @@ public class CarVO implements Serializable {
     private String model;
     
     @Schema(description = "品牌ID")
-    private Integer brandId;
+    private String brandId;
     
     @Schema(description = "品牌名称")
     private String brandName;
     
     @Schema(description = "分类ID")
-    private Integer categoryId;
+    private String categoryId;
     
     @Schema(description = "分类名称")
     private String categoryName;
     
     @Schema(description = "车商ID")
-    private Long merchantId;
+    private String merchantId;
     
     @Schema(description = "车商名称")
     private String merchantName;

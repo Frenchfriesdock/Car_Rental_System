@@ -1,6 +1,7 @@
 package com.hosiky.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hosiky.common.PageParameter;
 import com.hosiky.common.Result;
 import com.hosiky.domain.dto.CarCategoryDTO;
 import com.hosiky.domain.po.Brand;
@@ -25,7 +26,7 @@ public class CarCategoryController {
 
     @PostMapping("/save")
     @Operation(summary = "添加分类")
-    public Result add(CarCategoryDTO carCategoryDto) {
+    public Result add(@RequestBody CarCategoryDTO carCategoryDto) {
         return new Result(carCategoryService.create(carCategoryDto));
     }
 
@@ -36,25 +37,21 @@ public class CarCategoryController {
     }
 
     @GetMapping("/listPage")
-    @Operation(summary = "分页查询品牌")
-    public Result listPage(@RequestParam int page, @RequestParam int rows) {
+    @Operation(summary = "分页查询分类")
+    public Result listPage(@RequestBody PageParameter<CarCategoryDTO> pageParameter) {
 
-        // 参数校验
-        if (page < 1) page = 1;
-        if (rows < 1 || rows > 100) rows = 10; // 限制每页大小，防止恶意请求
-
-        Page<CarCategory> carCategoryPage = carCategoryService.getBrandsByPage(page, rows);
+        Page<CarCategory> carCategoryPage = carCategoryService.getBrandsByPage(pageParameter);
         return Result.ok(carCategoryPage);
     }
 
     @DeleteMapping("/batch")
-    @Operation(summary = "删除品牌")
-    public Result delete(@RequestBody List<Long> ids) {
+    @Operation(summary = "删除分类")
+    public Result delete(@RequestBody List<String> ids) {
         return carCategoryService.deleteByIds(ids);
     }
 
     @GetMapping("/getById")
-    public Result getById(@RequestParam Integer id) {
+    public Result getById(@RequestParam String id) {
         return Result.ok(carCategoryService.getByCarCategoryId(id));
     }
 }

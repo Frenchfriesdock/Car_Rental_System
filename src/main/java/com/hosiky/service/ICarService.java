@@ -17,9 +17,9 @@ public interface ICarService extends IService<Car> {
 
     CarVO updateCar(CarDTO carDTO);
 
-    CarVO getCarById(Integer id);
+    CarVO getCarById(String id);
 
-    void deleteCarById(Integer id);
+    void deleteCarById(String id);
 
     PageResult<CarVO> getCarList(CarQueryDTO queryDTO);
 }

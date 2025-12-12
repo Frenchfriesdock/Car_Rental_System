@@ -11,16 +11,16 @@ public class CarQueryDTO {
     private String plateNo;
     
     @Schema(description = "品牌ID")
-    private Integer brandId;
+    private String brandId;
     
     @Schema(description = "分类ID")
-    private Integer categoryId;
+    private String categoryId;
     
     @Schema(description = "车商ID")
-    private Long merchantId;
+    private String merchantId;
     
     @Schema(description = "车辆状态：1-空闲, 2-出租中, 3-维修")
-    private Integer status;
+    private String status;
     
     @Schema(description = "最低日租金")
     private Double minPriceDaily;

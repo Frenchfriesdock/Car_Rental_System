@@ -7,6 +7,7 @@ import java.io.Serializable;
 @Data
 public class BrandVo implements Serializable {
 
-    private Integer id;
+    private String id;
     private String name;
+    private String remark;
 }

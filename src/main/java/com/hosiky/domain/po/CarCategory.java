@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class CarCategory {
 
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private String id;
 
     @Schema(description = "分类名称")
     private String name;
@@ -20,6 +20,7 @@ public class CarCategory {
     @TableLogic
     private Integer deleted;
 
+    private String remark;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 

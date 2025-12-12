@@ -13,7 +13,7 @@ import java.util.List;
 public interface BrandMapper extends BaseMapper<Brand> {
 
     @Select("select * from brand where id = #{brandId}")
-    Brand getByBrandId(Integer brandId);
+    Brand getByBrandId(String brandId);
 
     @Delete("<script>" +
             "DELETE FROM brand WHERE id IN " +
@@ -21,5 +21,5 @@ public interface BrandMapper extends BaseMapper<Brand> {
             "#{id}" +
             "</foreach>" +
             "</script>")
-    boolean removeBatchByIdsTrue(@Param("ids") List<Long> ids); // 注意：这里添加了 @Param 注解
+    boolean removeBatchByIdsTrue(@Param("ids") List<String> ids); // 注意：这里添加了 @Param 注解
 }

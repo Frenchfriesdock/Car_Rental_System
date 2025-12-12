@@ -9,5 +9,5 @@ import org.apache.ibatis.annotations.Select;
 public interface MerchantMapper extends BaseMapper<Merchant> {
 
     @Select("select * from merchant where id = #{merchantId}")
-    Merchant getByMerchantId(Long merchantId);
+    Merchant getByMerchantId(String merchantId);
 }

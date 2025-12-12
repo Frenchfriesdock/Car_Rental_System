@@ -2,6 +2,7 @@ package com.hosiky.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hosiky.common.PageParameter;
 import com.hosiky.common.Result;
 import com.hosiky.domain.dto.CarCategoryDTO;
 import com.hosiky.domain.po.Brand;
@@ -14,11 +15,11 @@ import java.util.List;
 @Service
 public interface ICarCategoryService extends IService<CarCategory> {
 
-    Page<CarCategory> getBrandsByPage(int page, int rows);
+    Page<CarCategory> getBrandsByPage(PageParameter<CarCategoryDTO> pageParameter);
 
-    Result deleteByIds(List<Long> ids);
+    Result deleteByIds(List<String> ids);
 
     CarCategoryVo create(CarCategoryDTO carCategoryDto);
 
-    CarCategoryVo getByCarCategoryId(Integer id);
+    CarCategoryVo getByCarCategoryId(String id);
 }
